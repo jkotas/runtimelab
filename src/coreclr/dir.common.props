@@ -23,14 +23,16 @@
 
     <Platform Condition="'$(Platform)' == ''">$(TargetArchitecture)</Platform>
 
-    <PlatformConfigPathPart>$(TargetOS).$(TargetArchitecture).$(Configuration)</PlatformConfigPathPart>
+    <PlatformConfigPathPart>$(TargetOS).$(TargetArchitecture).$(CoreCLRConfiguration)</PlatformConfigPathPart>
   </PropertyGroup>
 
   <!-- Common properties -->
   <PropertyGroup>
     <ProjectDir>$(MSBuildThisFileDirectory)</ProjectDir>
+    <IsNativeAotProject Condition="$(MSBuildProjectDirectory.Contains('nativeaot'))">true</IsNativeAotProject>
 
-    <BaseIntermediateOutputPath>$(RepoRoot)artifacts\obj\coreclr\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath Condition="'$(IsNativeAotProject)' != 'true'">$(RepoRoot)artifacts\obj\coreclr\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath Condition="'$(IsNativeAotProject)' == 'true'">$(RepoRoot)artifacts\obj\coreclr\nativeaot\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
 
     <SourceDir>$(ProjectDir)src\</SourceDir>
     <RuntimeBinDir>$(ArtifactsDir)bin\coreclr\$(PlatformConfigPathPart)\</RuntimeBinDir>

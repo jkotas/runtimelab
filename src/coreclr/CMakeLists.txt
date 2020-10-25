@@ -92,6 +92,10 @@ endif()
 
 add_subdirectory(src/tools/aot/jitinterface)
 
+if(NOT CLR_CROSS_COMPONENTS_BUILD)
+  add_subdirectory(src/nativeaot)
+endif(NOT CLR_CROSS_COMPONENTS_BUILD)
+
 # Above projects do not build with these compile options
 # All of the compiler options are specified in file compileoptions.cmake
 # Do not add any new options here. They should be added in compileoptions.cmake
