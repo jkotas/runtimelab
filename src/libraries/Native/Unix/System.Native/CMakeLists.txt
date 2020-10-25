@@ -5,6 +5,8 @@ if (NOT CLR_CMAKE_TARGET_IOS AND NOT CLR_CMAKE_TARGET_TVOS)
 endif ()
 
 set(NATIVE_SOURCES
+    pal_environment.c
+    pal_dynamicload.c
     pal_errno.c
     pal_interfaceaddresses.c
     pal_io.c
