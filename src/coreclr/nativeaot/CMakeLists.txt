@@ -24,5 +24,9 @@ if(CLR_CMAKE_HOST_UNIX)
   endif(CLR_CMAKE_TARGET_ARCH_AMD64 OR CLR_CMAKE_TARGET_ARCH_I386)
 endif (CLR_CMAKE_HOST_UNIX)
 
+set(SHARED_EVENTPIPE_DIR ${CLR_SRC_NATIVE_DIR}/eventpipe)
+
 add_subdirectory(Bootstrap)
 add_subdirectory(Runtime)
+
+add_subdirectory(eventpipe)
