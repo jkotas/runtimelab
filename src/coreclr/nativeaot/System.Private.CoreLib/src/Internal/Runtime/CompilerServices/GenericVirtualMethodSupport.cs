@@ -16,14 +16,14 @@ namespace Internal.Runtime.CompilerServices
             IntPtr resolution = IntPtr.Zero;
 
             // Otherwise, walk parent hierarchy attempting to resolve
-            EETypePtr eetype = type.ToEETypePtr();
+            EETypePtr eeType = type.ToEETypePtr();
 
             IntPtr functionPointer = IntPtr.Zero;
             IntPtr genericDictionary = IntPtr.Zero;
 
-            while (!eetype.IsNull)
+            while (!eeType.IsNull)
             {
-                RuntimeTypeHandle handle = new RuntimeTypeHandle(eetype);
+                RuntimeTypeHandle handle = new RuntimeTypeHandle(eeType);
                 string methodName = methodNameAndSignature.Name;
                 RuntimeSignature methodSignature = methodNameAndSignature.Signature;
                 if (RuntimeAugments.TypeLoaderCallbacks.TryGetGenericVirtualTargetForTypeAndSlot(handle, ref declaringType, genericArguments, ref methodName, ref methodSignature, out functionPointer, out genericDictionary, out slotChanged))
@@ -35,7 +35,7 @@ namespace Internal.Runtime.CompilerServices
                     break;
                 }
 
-                eetype = eetype.BaseType;
+                eeType = eeType.BaseType;
             }
 
             // If the current slot to examine has changed, restart the lookup.

@@ -22,12 +22,12 @@
 #include "gcrhinterface.h"
 #include "shash.h"
 #include "TypeManager.h"
-#include "eetype.h"
+#include "MethodTable.h"
 #include "varint.h"
 
 #include "CommonMacros.inl"
 #include "slist.inl"
-#include "eetype.inl"
+#include "MethodTable.inl"
 
 #ifdef  FEATURE_GC_STRESS
 enum HijackType { htLoop, htCallsite };
@@ -86,7 +86,7 @@ ICodeManager * RuntimeInstance::FindCodeManagerByAddress(PTR_VOID pvAddress)
 
 // Find the code manager containing the given address, which might be a return address from a managed function. The
 // address may be to another managed function, or it may be to an unmanaged function. The address may also refer to
-// an EEType.
+// an MethodTable.
 ICodeManager * RuntimeInstance::FindCodeManagerForClasslibFunction(PTR_VOID address)
 {
     // Try looking up the code manager assuming the address is for code first. This is expected to be most common.
@@ -102,7 +102,7 @@ ICodeManager * RuntimeInstance::FindCodeManagerForClasslibFunction(PTR_VOID addr
 void * RuntimeInstance::GetClasslibFunctionFromCodeAddress(PTR_VOID address, ClasslibFunctionId functionId)
 {
     // Find the code manager for the given address, which is an address into some managed module. It could
-    // be code, or it could be an EEType. No matter what, it's an address into a managed module in some non-Rtm
+    // be code, or it could be an MethodTable. No matter what, it's an address into a managed module in some non-Rtm
     // type system.
     ICodeManager * pCodeManager = FindCodeManagerForClasslibFunction(address);
 
@@ -389,7 +389,7 @@ bool RuntimeInstance::ShouldHijackCallsiteForGcStress(uintptr_t CallsiteIP)
 #endif // FEATURE_GC_STRESS
 }
 
-COOP_PINVOKE_HELPER(uint32_t, RhGetGCDescSize, (EEType* pEEType))
+COOP_PINVOKE_HELPER(uint32_t, RhGetGCDescSize, (MethodTable* pEEType))
 {
     return RedhawkGCInterface::GetGCDescSize(pEEType);
 }
@@ -414,31 +414,31 @@ enum RuntimeHelperKind
 
 #define INDIRECTION(HELPER_NAME) ((PTR_VOID)&indirection_##HELPER_NAME)
 
-DECLARE_INDIRECTION(Object *, RhpNewFast, (EEType *));
-DECLARE_INDIRECTION(Object *, RhpNewFinalizable, (EEType *));
+DECLARE_INDIRECTION(Object *, RhpNewFast, (MethodTable *));
+DECLARE_INDIRECTION(Object *, RhpNewFinalizable, (MethodTable *));
 
-DECLARE_INDIRECTION(Array *, RhpNewArray, (EEType *, int));
+DECLARE_INDIRECTION(Array *, RhpNewArray, (MethodTable *, int));
 
-DECLARE_INDIRECTION(Object *, RhTypeCast_IsInstanceOf, (EEType *, Object *));
-DECLARE_INDIRECTION(Object *, RhTypeCast_CheckCast, (EEType *, Object *));
-DECLARE_INDIRECTION(Object *, RhTypeCast_IsInstanceOfClass, (EEType *, Object *));
-DECLARE_INDIRECTION(Object *, RhTypeCast_CheckCastClass, (EEType *, Object *));
-DECLARE_INDIRECTION(Object *, RhTypeCast_IsInstanceOfArray, (EEType *, Object *));
-DECLARE_INDIRECTION(Object *, RhTypeCast_CheckCastArray, (EEType *, Object *));
-DECLARE_INDIRECTION(Object *, RhTypeCast_IsInstanceOfInterface, (EEType *, Object *));
-DECLARE_INDIRECTION(Object *, RhTypeCast_CheckCastInterface, (EEType *, Object *));
+DECLARE_INDIRECTION(Object *, RhTypeCast_IsInstanceOf, (MethodTable *, Object *));
+DECLARE_INDIRECTION(Object *, RhTypeCast_CheckCast, (MethodTable *, Object *));
+DECLARE_INDIRECTION(Object *, RhTypeCast_IsInstanceOfClass, (MethodTable *, Object *));
+DECLARE_INDIRECTION(Object *, RhTypeCast_CheckCastClass, (MethodTable *, Object *));
+DECLARE_INDIRECTION(Object *, RhTypeCast_IsInstanceOfArray, (MethodTable *, Object *));
+DECLARE_INDIRECTION(Object *, RhTypeCast_CheckCastArray, (MethodTable *, Object *));
+DECLARE_INDIRECTION(Object *, RhTypeCast_IsInstanceOfInterface, (MethodTable *, Object *));
+DECLARE_INDIRECTION(Object *, RhTypeCast_CheckCastInterface, (MethodTable *, Object *));
 
-DECLARE_INDIRECTION(void, RhTypeCast_CheckVectorElemAddr, (EEType *, Object *));
+DECLARE_INDIRECTION(void, RhTypeCast_CheckVectorElemAddr, (MethodTable *, Object *));
 
 #ifdef HOST_ARM
-DECLARE_INDIRECTION(Object *, RhpNewFinalizableAlign8, (EEType *));
-DECLARE_INDIRECTION(Object *, RhpNewFastMisalign, (EEType *));
-DECLARE_INDIRECTION(Object *, RhpNewFastAlign8, (EEType *));
+DECLARE_INDIRECTION(Object *, RhpNewFinalizableAlign8, (MethodTable *));
+DECLARE_INDIRECTION(Object *, RhpNewFastMisalign, (MethodTable *));
+DECLARE_INDIRECTION(Object *, RhpNewFastAlign8, (MethodTable *));
 
-DECLARE_INDIRECTION(Array *, RhpNewArrayAlign8, (EEType *, int));
+DECLARE_INDIRECTION(Array *, RhpNewArrayAlign8, (MethodTable *, int));
 #endif
 
-COOP_PINVOKE_HELPER(PTR_VOID, RhGetRuntimeHelperForType, (EEType * pEEType, int helperKind))
+COOP_PINVOKE_HELPER(PTR_VOID, RhGetRuntimeHelperForType, (MethodTable * pEEType, int helperKind))
 {
     // This implementation matches what the binder does (MetaDataEngine::*() in rh\src\tools\rhbind\MetaDataEngine.cpp)
     // If you change the binder's behavior, change this implementation too
@@ -503,7 +503,7 @@ COOP_PINVOKE_HELPER(PTR_VOID, RhGetRuntimeHelperForType, (EEType * pEEType, int 
 #ifdef FEATURE_CACHED_INTERFACE_DISPATCH
 EXTERN_C void RhpInitialDynamicInterfaceDispatch();
 
-COOP_PINVOKE_HELPER(void *, RhNewInterfaceDispatchCell, (EEType * pInterface, int32_t slotNumber))
+COOP_PINVOKE_HELPER(void *, RhNewInterfaceDispatchCell, (MethodTable * pInterface, int32_t slotNumber))
 {
     InterfaceDispatchCell * pCell = new (nothrow) InterfaceDispatchCell[2];
     if (pCell == NULL)
