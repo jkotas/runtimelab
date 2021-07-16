@@ -65,8 +65,9 @@ namespace System.Runtime
         /// <param name="dependent">The dependent object instance to associate with <paramref name="target"/>.</param>
         public DependentHandle(object? target, object? dependent)
         {
-            // no need to check for null result: InternalInitialize expected to throw OOM.
             _handle = InternalInitialize(target, dependent);
+            if ((nint)_handle == 0)
+                ThrowHelper.ThrowOutOfMemoryException();
         }
 
         /// <summary>

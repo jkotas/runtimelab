@@ -20,11 +20,6 @@ COOP_PINVOKE_HELPER(OBJECTHANDLE, RhpHandleAlloc, (Object *pObject, int type))
     return GCHandleUtilities::GetGCHandleManager()->GetGlobalHandleStore()->CreateHandleOfType(pObject, (HandleType)type);
 }
 
-COOP_PINVOKE_HELPER(OBJECTHANDLE, RhpHandleAllocDependent, (Object *pPrimary, Object *pSecondary))
-{
-    return GCHandleUtilities::GetGCHandleManager()->GetGlobalHandleStore()->CreateDependentHandle(pPrimary, pSecondary);
-}
-
 COOP_PINVOKE_HELPER(void, RhHandleFree, (OBJECTHANDLE handle))
 {
     GCHandleUtilities::GetGCHandleManager()->DestroyHandleOfUnknownType(handle);
@@ -33,18 +28,6 @@ COOP_PINVOKE_HELPER(void, RhHandleFree, (OBJECTHANDLE handle))
 COOP_PINVOKE_HELPER(Object *, RhHandleGet, (OBJECTHANDLE handle))
 {
     return ObjectFromHandle(handle);
-}
-
-COOP_PINVOKE_HELPER(Object *, RhHandleGetDependent, (OBJECTHANDLE handle, Object **ppSecondary))
-{
-    Object *pPrimary = ObjectFromHandle(handle);
-    *ppSecondary = (pPrimary != NULL) ? GetDependentHandleSecondary(handle) : NULL;
-    return pPrimary;
-}
-
-COOP_PINVOKE_HELPER(void, RhHandleSetDependentSecondary, (OBJECTHANDLE handle, Object *pSecondary))
-{
-    SetDependentHandleSecondary(handle, pSecondary);
 }
 
 COOP_PINVOKE_HELPER(void, RhHandleSet, (OBJECTHANDLE handle, Object *pObject))
@@ -80,4 +63,23 @@ COOP_PINVOKE_HELPER(void, RhHandleSetVariableType, (OBJECTHANDLE handle, uint32_
 COOP_PINVOKE_HELPER(uint32_t, RhHandleCompareExchangeVariableType, (OBJECTHANDLE handle, uint32_t oldType, uint32_t newType))
 {
     return CompareExchangeVariableHandleType(handle, oldType, newType);
+}
+
+
+
+COOP_PINVOKE_HELPER(OBJECTHANDLE, Rhp_System_!!!HandleAllocDependent, (Object* pPrimary, Object* pSecondary))
+{
+    return GCHandleUtilities::GetGCHandleManager()->GetGlobalHandleStore()->CreateDependentHandle(pPrimary, pSecondary);
+}
+
+COOP_PINVOKE_HELPER(Object*, RhHandleGetDependent, (OBJECTHANDLE handle, Object** ppSecondary))
+{
+    Object* pPrimary = ObjectFromHandle(handle);
+    *ppSecondary = (pPrimary != NULL) ? GetDependentHandleSecondary(handle) : NULL;
+    return pPrimary;
+}
+
+COOP_PINVOKE_HELPER(void, RhHandleSetDependentSecondary, (OBJECTHANDLE handle, Object* pSecondary))
+{
+    SetDependentHandleSecondary(handle, pSecondary);
 }

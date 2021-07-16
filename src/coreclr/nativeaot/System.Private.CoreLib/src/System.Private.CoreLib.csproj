@@ -15,6 +15,7 @@
     <SkipCommonResourcesIncludes>true</SkipCommonResourcesIncludes>
     <TargetsCoreRT>true</TargetsCoreRT>
     <RuntimeBasePath>..\..\Runtime.Base\src\</RuntimeBasePath>
+    <CoreCLRCoreLibPath>..\..\..\System.Private.CoreLib\src</CoreCLRCoreLibPath>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -189,7 +190,9 @@
     <Compile Include="System\Reflection\MissingMetadataException.cs" />
     <Compile Include="System\Resources\ManifestBasedResourceGroveler.CoreRT.cs" />
     <Compile Include="System\RuntimeArgumentHandle.cs" />
-    <Compile Include="System\Runtime\DependentHandle.cs" />
+    <Compile Include="$(CoreCLRCoreLibPath)\System\Runtime\DependentHandle.cs">
+      <Link>System\Runtime\DependentHandle.cs</Link>
+    </Compile>
     <Compile Include="System\Runtime\CompilerServices\ForceLazyDictionaryAttribute.cs" />
     <Compile Include="System\Runtime\CompilerServices\EagerStaticClassConstructionAttribute.cs" />
     <Compile Include="System\Runtime\CompilerServices\ForceDictionaryLookupsAttribute.cs" />

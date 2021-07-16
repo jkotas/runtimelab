@@ -14,22 +14,19 @@
 #include "common.h"
 #include "comdependenthandle.h"
 
-FCIMPL2(OBJECTHANDLE, DependentHandle::InternalInitialize, Object *_target, Object *_dependent)
+FCIMPL2(OBJECTHANDLE, DependentHandle::InternalAlloc, Object *_target, Object *_dependent)
 {
     FCALL_CONTRACT;
 
     OBJECTREF target(_target);
     OBJECTREF dependent(_dependent);
-    OBJECTHANDLE result = NULL;
 
-    HELPER_METHOD_FRAME_BEGIN_RET_NOPOLL();
+    if (CORProfilerTrackGC())
+    {
+        FC_INNER_RETURN(LPVOID, (LPVOID)FCDiagInternalInitialize(target, dependent));
+    }
 
-    // Create the handle.
-    result = GetAppDomain()->CreateDependentHandle(target, dependent);
-
-    HELPER_METHOD_FRAME_END_POLL();
-
-    return result;
+    !!!
 }
 FCIMPLEND
 

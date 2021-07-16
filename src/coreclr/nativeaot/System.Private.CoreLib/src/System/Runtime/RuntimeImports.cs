@@ -223,19 +223,6 @@ namespace System.Runtime
             return h;
         }
 
-        // Allocate handle for dependent handle case where a secondary can be set at the same time.
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        [RuntimeImport(RuntimeLibrary, "RhpHandleAllocDependent")]
-        private static extern IntPtr RhpHandleAllocDependent(object primary, object secondary);
-
-        internal static IntPtr RhHandleAllocDependent(object primary, object secondary)
-        {
-            IntPtr h = RhpHandleAllocDependent(primary, secondary);
-            if (h == IntPtr.Zero)
-                throw new OutOfMemoryException();
-            return h;
-        }
-
         // Allocate variable handle with its initial type.
         [MethodImpl(MethodImplOptions.InternalCall)]
         [RuntimeImport(RuntimeLibrary, "RhpHandleAllocVariable")]
@@ -269,20 +256,10 @@ namespace System.Runtime
 #endif
         }
 
-        // Get primary and secondary object references from dependent handle.
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        [RuntimeImport(RuntimeLibrary, "RhHandleGetDependent")]
-        internal static extern object RhHandleGetDependent(IntPtr handle, out object secondary);
-
         // Set object reference into handle.
         [MethodImpl(MethodImplOptions.InternalCall)]
         [RuntimeImport(RuntimeLibrary, "RhHandleSet")]
         internal static extern void RhHandleSet(IntPtr handle, object value);
-
-        // Set the secondary object reference into a dependent handle.
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        [RuntimeImport(RuntimeLibrary, "RhHandleSetDependentSecondary")]
-        internal static extern void RhHandleSetDependentSecondary(IntPtr handle, object secondary);
 
         // Get the handle type associated with a variable handle.
         [MethodImpl(MethodImplOptions.InternalCall)]

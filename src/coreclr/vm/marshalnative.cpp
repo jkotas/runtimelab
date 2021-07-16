@@ -546,12 +546,7 @@ FCIMPL2(LPVOID, MarshalNative::GCHandleInternalAlloc, Object *obj, int type)
         FC_INNER_RETURN(LPVOID, (LPVOID) FCDiagCreateHandle(objRef, type));
     }
 
-    OBJECTHANDLE hnd = GetAppDomain()->GetHandleStore()->CreateHandleOfType(OBJECTREFToObject(objRef), static_cast<HandleType>(type));
-    if (!hnd)
-    {
-        FCThrow(kOutOfMemoryException);
-    }
-    return (LPVOID) hnd;
+    return (LPVOID)GetAppDomain()->GetHandleStore()->CreateHandleOfType(OBJECTREFToObject(objRef), static_cast<HandleType>(type));
 }
 FCIMPLEND
 
