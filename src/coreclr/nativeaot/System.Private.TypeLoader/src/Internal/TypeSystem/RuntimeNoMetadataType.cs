@@ -139,15 +139,15 @@ namespace Internal.TypeSystem.NoMetadata
             {
                 unsafe
                 {
-                    MethodTable* MethodTable = _genericTypeDefinition.ToEETypePtr();
-                    EETypeElementType elementType = MethodTable->ElementType;
+                    MethodTable* pEEType = _genericTypeDefinition.ToEETypePtr();
+                    EETypeElementType elementType = pEEType->ElementType;
                     if (elementType == EETypeElementType.SystemArray)
                     {
                         // System.Array is a regular class in the type system
                         flags |= TypeFlags.Class;
                     }
                     else if (elementType <= EETypeElementType.Double &&
-                        (MethodTable->IsGenericTypeDefinition || MethodTable->BaseType == typeof(System.Enum).TypeHandle.ToEETypePtr()))
+                        (pEEType->IsGenericTypeDefinition || pEEType->BaseType == typeof(System.Enum).TypeHandle.ToEETypePtr()))
                     {
                         // Enums are represented as their underlying type in the runtime type system
                         // Note: we check for IsGenericDefinition above to cover generic enums (base types are not set
@@ -157,8 +157,8 @@ namespace Internal.TypeSystem.NoMetadata
                     else
                     {
                         // Paranoid check that we handled enums above
-                        Debug.Assert(MethodTable->IsGenericTypeDefinition ||
-                            MethodTable->BaseType != typeof(System.Enum).TypeHandle.ToEETypePtr());
+                        Debug.Assert(pEEType->IsGenericTypeDefinition ||
+                            pEEType->BaseType != typeof(System.Enum).TypeHandle.ToEETypePtr());
 
                         // The rest of values should be directly castable to TypeFlags
                         Debug.Assert((int)EETypeElementType.Void == (int)TypeFlags.Void);
@@ -180,8 +180,8 @@ namespace Internal.TypeSystem.NoMetadata
 
                 unsafe
                 {
-                    MethodTable* MethodTable = _genericTypeDefinition.ToEETypePtr();
-                    if (MethodTable->IsByRefLike)
+                    MethodTable* pEEType = _genericTypeDefinition.ToEETypePtr();
+                    if (pEEType->IsByRefLike)
                     {
                         flags |= TypeFlags.IsByRefLike;
                     }
